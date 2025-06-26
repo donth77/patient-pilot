@@ -1,0 +1,55 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // This rule allows anyone with your Firestore database reference to view, edit,
+    // and delete all data in your Firestore database. It is useful for getting
+    // started, but it is configured to expire after 30 days because it
+    // leaves your app open to attackers. At that time, all client
+    // requests to your Firestore database will be denied.
+    //
+    // Make sure to write security rules for your app before that time, or else
+    // all client requests to your Firestore database will be denied until you Update
+    // your rules
+    match /{document=**} {
+      allow read, write: if request.time < timestamp.date(2025, 7, 24);
+    }
+  }
+  
+  match /databases/{db}/documents {
+
+    /*  provider profile ------------------------------------- */
+    match /providers/{providerId} {
+
+      // A provider can read or update ONLY their own profile.
+      allow read, write: if request.auth.uid == providerId;
+
+      /*  patients sub-collection --------------------------- */
+      match /patients/{patientId} {
+        allow read, write: if request.auth.uid == providerId
+                            && validPatient(request.resource.data);
+      }
+
+      /*  optional audit trail (read-only) ------------------ */
+      match /patients/{patientId}/auditTrail/{entryId} {
+        allow read:  if request.auth.uid == providerId;
+        allow write: if false;        // only back-end code writes here
+      }
+    }
+  }
+}
+
+/* ---- helper function: schema validation ------------------- */
+function validPatient(data) {
+  return
+    data.firstName is string &&
+    (!data.middleName || data.middleName is string) &&
+    data.lastName  is string &&
+    data.dateOfBirth is timestamp &&
+    data.status in ['INQUIRY', 'ONBOARDING', 'ACTIVE', 'CHURNED'] &&
+    data.address.streetLine1 is string &&
+    data.address.city        is string &&
+    data.address.state       is string &&
+    data.address.postalCode  is string;
+}

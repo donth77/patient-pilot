@@ -1,0 +1,25 @@
+@import "tailwindcss";
+@import "primereact/resources/themes/lara-light-blue/theme.css"
+  layer(primereact);
+@import "primeicons/primeicons.css";
+
+@theme {
+  --color-dodgerBlue: #3b82f6;
+  --color-ghostWhite: #f9fafb;
+  --color-tomato: #ef4444;
+}
+.p-datatable {
+}
+
+.p-datatable-header {
+  background: white;
+  border-top: none;
+}
+
+.p-datepicker-month {
+  margin-right: 4px;
+}
+
+.pac-container {
+  z-index: 10000;
+}
