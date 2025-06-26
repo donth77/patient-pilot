@@ -15,8 +15,15 @@ router.use(authenticateProvider);
 // Create patient
 router.post("/", validatePatient, async (req: any, res) => {
   try {
-    const { firstName, middleName, lastName, dateOfBirth, status, address } =
-      req.body;
+    const {
+      firstName,
+      middleName,
+      lastName,
+      dateOfBirth,
+      status,
+      address,
+      profileImageUrl,
+    } = req.body;
 
     if (!firstName || !lastName || !dateOfBirth || !status || !address) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -29,6 +36,7 @@ router.post("/", validatePatient, async (req: any, res) => {
       dateOfBirth,
       status,
       address,
+      ...(profileImageUrl && { profileImageUrl }),
       createdAt: new Date() as any,
       updatedAt: new Date() as any,
     };
@@ -101,8 +109,15 @@ router.get("/:id", async (req: any, res) => {
 // Update patient
 router.put("/:id", validatePatientUpdate, async (req: any, res) => {
   try {
-    const { firstName, middleName, lastName, dateOfBirth, status, address } =
-      req.body;
+    const {
+      firstName,
+      middleName,
+      lastName,
+      dateOfBirth,
+      status,
+      address,
+      profileImageUrl,
+    } = req.body;
 
     const updateData: Partial<Patient> = {
       ...(firstName && { firstName }),
@@ -111,6 +126,7 @@ router.put("/:id", validatePatientUpdate, async (req: any, res) => {
       ...(dateOfBirth && { dateOfBirth }),
       ...(status && { status }),
       ...(address && { address }),
+      ...(profileImageUrl !== undefined && { profileImageUrl }),
       updatedAt: new Date() as any,
     };
 

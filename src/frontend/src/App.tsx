@@ -27,8 +27,6 @@ function App() {
     initializeAuth();
   }, [setIdToken, setSelectedProvider]);
 
-  useEffect(() => {}, [idToken, selectedProvider]);
-
   return (
     <div className="flex flex-col h-screen">
       {isLoading ? (
