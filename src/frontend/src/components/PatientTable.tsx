@@ -299,7 +299,7 @@ const PatientTable = forwardRef<PatientTableRef>((_, ref) => {
         sortField="lastName"
         sortOrder={1}
         paginator
-        rows={10}
+        rows={5}
       >
         <Column
           field="lastName"
