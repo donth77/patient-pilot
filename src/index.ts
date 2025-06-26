@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import "./config/firebase"; // Initialize Firebase first
+import "./config/firebase.js"; // Initialize Firebase first
 import app from "./app.js";
 
 dotenv.config();

@@ -39,3 +39,4 @@ firebase-debug.log
 !.env.template
 
 node_modules
+dist
