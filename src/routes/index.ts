@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { patientRoutes } from "./patients";
-import { providerRoutes } from "./providers";
+import { patientRoutes } from "./patients.js";
+import { providerRoutes } from "./providers.js";
 
 const router = Router();
 

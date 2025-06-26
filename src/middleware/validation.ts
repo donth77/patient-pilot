@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { validateDateOfBirth } from "../utils/validation";
+import { validateDateOfBirth } from "../utils/validation.js";
 
 export const validatePatient = (
   req: Request,

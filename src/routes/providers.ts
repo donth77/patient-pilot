@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { authenticateProvider } from "../middleware/auth";
-import { getProviderRef } from "../services/firestore";
-import { Provider } from "../types";
+import { authenticateProvider } from "../middleware/auth.js";
+import { getProviderRef } from "../services/firestore.js";
+import { Provider } from "../types/index.js";
 
 const router = Router();
 

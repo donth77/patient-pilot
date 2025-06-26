@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { authenticateProvider } from "../middleware/auth";
-import { getPatientsCollection, getPatientRef } from "../services/firestore";
-import { Patient } from "../types";
+import { authenticateProvider } from "../middleware/auth.js";
+import { getPatientsCollection, getPatientRef } from "../services/firestore.js";
+import { Patient } from "../types/index.js";
 import {
   validatePatient,
   validatePatientUpdate,
-} from "../middleware/validation";
+} from "../middleware/validation.js";
 
 const router = Router();
 
@@ -44,12 +44,7 @@ router.post("/", validatePatient, async (req: any, res) => {
 // List patients with optional filtering
 router.get("/", async (req: any, res) => {
   try {
-    const { 
-      status, 
-      limit = 50, 
-      offset = 0, 
-      orderBy = "lastName" 
-    } = req.query;
+    const { status, limit = 50, offset = 0, orderBy = "lastName" } = req.query;
 
     const parsedLimit = parseInt(limit);
     const parsedOffset = parseInt(offset);
@@ -75,8 +70,8 @@ router.get("/", async (req: any, res) => {
         limit: parsedLimit,
         offset: parsedOffset,
         count: patients.length,
-        hasMore: patients.length === parsedLimit
-      }
+        hasMore: patients.length === parsedLimit,
+      },
     });
   } catch (error) {
     console.error("Error fetching patients:", error);
