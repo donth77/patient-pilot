@@ -8,8 +8,7 @@ import PatientTable from "./components/PatientTable";
 
 function App() {
   const [isLoading, setLoading] = useState(true);
-  const { idToken, selectedProvider, setIdToken, setSelectedProvider } =
-    useAuth();
+  const { selectedProvider, setIdToken, setSelectedProvider } = useAuth();
   const [showAddPatientDialog, setShowAddPatientDialog] = useState(false);
   const patientTableRef = useRef<{ fetchPatients: () => void }>(null);
 

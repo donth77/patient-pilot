@@ -22,10 +22,97 @@ const PatientTable = forwardRef<PatientTableRef>((_, ref) => {
   const [isLoading, setLoading] = useState(true);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [globalFilterValue, setGlobalFilterValue] = useState("");
+  const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const { idToken } = useAuth();
+
+  const globalFilterFunction = (
+    data: Patient[],
+    filterValue: string
+  ): Patient[] => {
+    if (!filterValue.trim()) return data;
+
+    const searchTerm = filterValue.toLowerCase().trim();
+
+    return data.filter((patient) => {
+      // Full name search incl middle name
+      const fullName =
+        `${patient.firstName} ${patient.middleName || ""} ${patient.lastName}`.toLowerCase();
+
+      // Long formatted date for searching
+      const formattedDate = new Intl.DateTimeFormat(navigator.language, {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      })
+        .format(new Date(patient.dateOfBirth))
+        .toLowerCase();
+
+      // Short date format
+      const shortDate = new Intl.DateTimeFormat(navigator.language, {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })
+        .format(new Date(patient.dateOfBirth))
+        .toLowerCase();
+
+      // Address
+      const getAddressLongNames = (
+        addressComponents: GooglePlaceAddressComponent[]
+      ) => {
+        const abbreviations: string[] = [];
+        // get long names for address components for searching
+
+        addressComponents.forEach((component) => {
+          if (component.long_name) {
+            abbreviations.push(component.long_name.toLowerCase());
+          }
+
+          if (component.short_name) {
+            abbreviations.push(component.short_name.toLowerCase());
+          }
+        });
+
+        return abbreviations.join(" ");
+      };
+
+      const addressLongNames = getAddressLongNames(
+        patient.address.address_components as GooglePlaceAddressComponent[]
+      );
+
+      const fullAddress = patient.address.formatted_address.toLowerCase();
+
+      // Status
+      const status = patient.status.toLowerCase();
+
+      // Name parts
+      const firstName = patient.firstName.toLowerCase();
+      const middleName = (patient.middleName || "").toLowerCase();
+      const lastName = patient.lastName.toLowerCase();
+
+      // search matching
+      return (
+        fullName.includes(searchTerm) ||
+        firstName.includes(searchTerm) ||
+        middleName.includes(searchTerm) ||
+        lastName.includes(searchTerm) ||
+        formattedDate.includes(searchTerm) ||
+        shortDate.includes(searchTerm) ||
+        status.includes(searchTerm) ||
+        addressLongNames.includes(searchTerm) ||
+        fullAddress.includes(searchTerm) ||
+        patient.dateOfBirth.includes(searchTerm)
+      );
+    });
+  };
+
+  useEffect(() => {
+    const filtered = globalFilterFunction(patients, globalFilterValue);
+    setFilteredPatients(filtered); // Update filtered patients when search term or patients change
+  }, [patients, globalFilterValue]);
 
   const fetchPatients = async () => {
     try {
@@ -201,7 +288,7 @@ const PatientTable = forwardRef<PatientTableRef>((_, ref) => {
   ) : (
     <>
       <DataTable
-        value={patients}
+        value={filteredPatients}
         header={dataTableHeader}
         style={{
           borderTop: "1px solid #eee",
@@ -213,7 +300,6 @@ const PatientTable = forwardRef<PatientTableRef>((_, ref) => {
         sortOrder={1}
         paginator
         rows={10}
-        globalFilter={globalFilterValue}
       >
         <Column
           field="lastName"
